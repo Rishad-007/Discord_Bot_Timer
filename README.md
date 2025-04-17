@@ -13,7 +13,9 @@ A simple Discord bot built with `discord.py` to help manage time during debate s
     - After 1 minute
     - When 1 minute remains
     - When time is up
-#commands
+```
+---
+##commands
 ```bash
 !timer 7m30s
 !pause
