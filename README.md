@@ -7,7 +7,7 @@ A simple Discord bot built with `discord.py` to help manage time during debate s
 
 ## 📦 Features
 
-- `/starttimer <minutes>`: Starts a countdown timer for a given number of minutes.
+- `!timer <numbeer>m<number>s`: Starts a countdown timer for a given number of minutes & seconds.
 - Sends alerts at:
     - Start of the timer
     - After 1 minute
