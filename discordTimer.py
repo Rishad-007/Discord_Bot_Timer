@@ -3,7 +3,17 @@ from discord.ext import commands
 import asyncio
 import re
 import os
+import logging
+import threading
 from dotenv import load_dotenv
+from flask import Flask
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -11,8 +21,23 @@ intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
+# Initialize Flask app
+app = Flask(__name__)
+
 # To track timers per channel
 timers = {}
+
+# Flask route for health check
+@app.route('/')
+def health_check():
+    return "Bot is running", 200
+
+# Function to run Flask server in a separate thread
+def run_flask():
+    port = int(os.getenv('PORT', 10000))
+    host = '0.0.0.0'
+    logger.info(f"Starting Flask server on {host}:{port}")
+    app.run(host=host, port=port, debug=False)
 
 # Helper to parse "5m30s" style input
 def parse_time_input(time_str):
@@ -116,11 +141,19 @@ async def stop(ctx):
 
 @bot.event
 async def on_ready():
-    print(f'Logged in as {bot.user}')
+    logger.info(f'Logged in as {bot.user}')
 
-# Load bot token from .env file
+# Load bot token from environment
 bot_token = os.getenv('DISCORD_TOKEN')
 if not bot_token:
-    raise ValueError("DISCORD_TOKEN not found in .env file")
+    logger.error("DISCORD_TOKEN not found in environment variables")
+    raise ValueError("DISCORD_TOKEN not found in environment variables")
 
+# Start Flask server in a separate thread
+logger.info("Starting Flask server thread...")
+flask_thread = threading.Thread(target=run_flask, daemon=True)
+flask_thread.start()
+
+# Start Discord bot
+logger.info("Starting Discord bot...")
 bot.run(bot_token)
