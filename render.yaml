@@ -1,0 +1,9 @@
+services:
+  - type: worker
+    name: discord-timer-bot
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python3 discordTimer.py
+    envVars:
+      - key: DISCORD_TOKEN
+        sync: false
