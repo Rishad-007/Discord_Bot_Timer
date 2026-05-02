@@ -2,6 +2,10 @@ import discord
 from discord.ext import commands
 import asyncio
 import re
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -114,7 +118,9 @@ async def stop(ctx):
 async def on_ready():
     print(f'Logged in as {bot.user}')
 
-# Paste your bot token here
+# Load bot token from .env file
+bot_token = os.getenv('DISCORD_TOKEN')
+if not bot_token:
+    raise ValueError("DISCORD_TOKEN not found in .env file")
 
-
-bot.run('Token')
+bot.run(bot_token)
